@@ -81,8 +81,11 @@ contract Thing {
   function addBroker(address _newBroker)
   public 
   {
-    require(msg.sender == owner);
-    brokerStatus[_newBroker].status = brokerStatus_ActivePendingStake;
+    if(msg.sender == owner) {
+      brokerStatus[_newBroker].status = brokerStatus_Active;
+    } else {
+      brokerStatus[_newBroker].status = brokerStatus_ActivePendingStake;
+    }
   }
 
   function addBrokerStake()

@@ -1,18 +1,28 @@
 
-// const HardwareWallet = require("truffle-hdwallet-provider");
+const HDWalletProvider = require("truffle-hdwallet-provider");
 
 module.exports = {
   networks: {
+    xdai: {
+      provider: function() {
+            return new HDWalletProvider(
+           process.env.MNEMONIC,
+           "https://dai.poa.network")
+      },
+      network_id: 100,
+      gas: 5000000,
+      gasPrice: 1000000000
+    },
     development: {
       host: "127.0.0.1",
       port: 9545,
       network_id: "*" // match any network
-    },
-    rinkeby: {
-      // provider: () => new HardwareWallet(require("./truffle-secrets").mnemonic, require("./truffle-secrets").infura),
-      network_id: 4,
-      gas: 4500000, // Gas limit used for deploys
-      gasPrice: 25000000000
+    }
+  },
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 200
     }
   }
 };
