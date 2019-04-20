@@ -64,13 +64,13 @@ class _MyHomePageState extends State<MyHomePage> {
   String messageReceived = '';
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController amountController = TextEditingController();
+  var transactions = new List<String>();
 
   @override
   void initState() {
     super.initState();
     receiver.onSmsReceived.listen((SmsMessage msg) =>
     {
-
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -80,9 +80,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
       var words = msg.body.split(' ');
       if(words.length != 4) {
+        new SmsSender().sendSms(new SmsMessage(msg.sender, "Funds not sent - Try this format - Send xxx to xxx"));
         messageReceived = msg.sender;
       }else{
         messageReceived = "Sending " + words[1] + " XDAI to " + words[3];
+        new SmsSender().sendSms(new SmsMessage(msg.sender, words[1] + " XDAI sent to " + words[3]));
+        transactions.add(messageReceived);
       }
 
     })
@@ -96,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // A dog needs a name, but may be location independent,
     // so we'll only abandon the save if there's no name.
     if (phoneNumberController.text.isEmpty) {
-      print('');
+      print('Enter valid phone number you moogoo ');
     } else {
       new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), amountController.text.toString()));
     }
@@ -156,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Text(
-                '$messageReceived',
+                '$transactions',
                 style: Theme.of(context).textTheme.body1,
               ),
             ],
