@@ -72,8 +72,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   String messageReceived = '';
-  TextEditingController phoneNumberController = TextEditingController();
-  TextEditingController amountController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController(text: '');
+  TextEditingController amountController = TextEditingController(text: '');
   var transactions = new List<String>();
 
 
@@ -107,12 +107,19 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
 
       var words = msg.body.split(' ');
-      if(words.length != 4) {
+      if(words[0] != "SEND") {
+        // ignore
+      } else if(words.length != 4) {
         new SmsSender().sendSms(new SmsMessage(msg.sender, "Funds not sent - Try this format - Send xxx to xxx"));
         messageReceived = msg.sender;
       }else{
-        messageReceived = "Sending " + words[1] + " XDAI to " + words[3];
-        new SmsSender().sendSms(new SmsMessage(msg.sender, words[1] + " XDAI sent to " + words[3]));
+        String receipient = words[3];
+        String amount = words[1];
+        messageReceived = "Sending " + amount + " XDAI to " + receipient;
+        
+        new SmsSender().sendSms(new SmsMessage(msg.sender, amount + " XDAI sent to " + receipient));
+        new SmsSender().sendSms(new SmsMessage(receipient, amount + " XDAI received from " + msg.sender));
+        
         transactions.add(messageReceived);
       }
 
@@ -145,6 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Enter valid phone number you moogoo ');
     } else {
       new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), amountController.text.toString()));
+       Navigator.pushReplacementNamed(context, "/check");
     }
   }
 
@@ -198,18 +206,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     //
                     // Set the text of your controller to
                     // to the next value.
-                    onChanged: (v) => phoneNumberController.text = v,
+                    autofocus: true,
+                    autocorrect: false,
+                    keyboardType: TextInputType.number,
+                    // onChanged: (v) => phoneNumberController.text = v,
                     decoration: InputDecoration(
                       labelText: 'Recipient Cellnumber',
+                      icon: Icon(Icons.phone_android)
                     )),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: TextField(
                     controller: amountController,
-                    onChanged: (v) => amountController.text = v,
+                    keyboardType: TextInputType.number,
+                    autocorrect: false,
+                    // onChanged: (v) => amountController.text = v,
                     decoration: InputDecoration(
                       labelText: "Amount",
+                      icon: Icon(Icons.print)
                     )),
               ),
               Padding(
