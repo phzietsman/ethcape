@@ -48,6 +48,9 @@ contract Thing {
   uint brokerStatus_ActivePendingVote = 4;
   uint brokerStatus_ActivePendingStake = 5;
 
+  event NewTransaction(string _from);
+  event SuccessfulTransaction(string _from, string _to, uint _amount);
+
   constructor() public {
     owner = msg.sender;
   }
@@ -146,6 +149,8 @@ contract Thing {
     pendingPayment[_from].paymentType = PAYMENT_TYPE_PHONE;
     pendingPayment[_from].voted[msg.sender] = 1;
 
+    emit NewTransaction(_from);
+
   }
 
   function sendFundsToAddr(string memory _from, address _to, uint _amount)
@@ -178,7 +183,8 @@ contract Thing {
 
         if(pendingPayment[_from].paymentType == PAYMENT_TYPE_PHONE) {
             phoneNumberToBalance[_from] -= pendingPayment[_from].amount; 
-            phoneNumberToBalance[pendingPayment[_from].toPhone] += pendingPayment[_from].amount; 
+            phoneNumberToBalance[pendingPayment[_from].toPhone] += pendingPayment[_from].amount;
+            emit SuccessfulTransaction(_from, pendingPayment[_from].toPhone, pendingPayment[_from].amount); 
         } else {
             walletBalance -= pendingPayment[_from].amount;          
             phoneNumberToBalance[_from] -= pendingPayment[_from].amount; 
