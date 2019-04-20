@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:sms/sms.dart';
-import 'dart:developer';
+
 import 'dart:async';
+import 'package:http/http.dart';
+import 'package:web3dart/web3dart.dart';
+
+// Smart contract goodies, needs to be stored somewhere sane
+const String Abi =
+    '[{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[],"name":"getWalletBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getBrokerStake","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_newBroker","type":"address"}],"name":"getBroker","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newBroker","type":"address"}],"name":"addBroker","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"addBrokerStake","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"_broker","type":"address"}],"name":"voteBrokerIn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_phoneNumber","type":"string"}],"name":"getUser","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_phoneNumber","type":"string"}],"name":"fundUser","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"},{"name":"_to","type":"string"},{"name":"_amount","type":"uint256"}],"name":"sendFundsToPhone","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"},{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"sendFundsToAddr","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"}],"name":"voteForTransaction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]';
+
+const String privateKey =
+    'EAE248BEB35E1A2BCE1C9FE2E648FC3D401733A848096B8BEC61D5EC92ACE6E5';
+
+const String url = 'https://dai.poa.network';
+const String contractAddress = '0x48cCF267510C75C9AfDDDe1989AA35CAdaE49AcE';
+
 
 SmsReceiver receiver = new SmsReceiver();
 
 void main() => runApp(MyApp());
-
-
-
 
 
 
@@ -66,8 +76,26 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController amountController = TextEditingController();
   var transactions = new List<String>();
 
+
+
+
   @override
   void initState() {
+
+
+//    final getWalletBalanceFN = thingContract.findFunctionsByName('getWalletBalance').first;
+//    final getWalletBalanceResult = await Transaction(
+//        keys: credentials,
+//        maximumGas: 0)
+//        .prepareForCall(
+//          thingContract,
+//          getWalletBalanceFN, null)
+//        .call(ethClient);
+//
+//    final kitty = CryptoKitty.fromResponse(mrsWikiLeaksId, kittenResponse);
+//    print(kitty);
+
+
     super.initState();
     receiver.onSmsReceived.listen((SmsMessage msg) =>
     {
@@ -94,15 +122,53 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  void sendMoney(BuildContext context) {
+  void sendMoney(BuildContext context)  {
     // First make sure there is some information in the form.
     // A dog needs a name, but may be location independent,
     // so we'll only abandon the save if there's no name.
+    //gatherNewsReports().then((value) => print(value));
+    //getWal().then((value) => { print(value.getInEther.toString())}).catchError(print);
+    final httpClient = Client();
+    final ethClient = Web3Client(url, httpClient);
+    final credentials = Credentials.fromPrivateKeyHex(privateKey);
+    final thingAbi = ContractABI.parseFromJSON(Abi, 'Thing');
+    final thingContract = DeployedContract(
+        thingAbi,
+        EthereumAddress(contractAddress),
+        ethClient,
+        credentials);
+
+    ethClient.getBalance(credentials.address).then((value) => print(value.getValueInUnit(EtherUnit.ether))).catchError((err) => print);
+    //print(balance.getValueInUnit(EtherUnit.ether));
+
     if (phoneNumberController.text.isEmpty) {
       print('Enter valid phone number you moogoo ');
     } else {
       new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), amountController.text.toString()));
     }
+  }
+
+  var news = '<gathered news goes here>';
+  var oneSecond = Duration(seconds: 1);
+
+// Imagine that this function is more complex and slow. :)
+  Future<String> gatherNewsReports() =>
+      Future.value(news);
+
+  Future<EtherAmount> getWal() async {
+    // smart contracts goodies
+    final httpClient = Client();
+    final ethClient = Web3Client(url, httpClient);
+    final credentials = Credentials.fromPrivateKeyHex(privateKey);
+    final thingAbi = ContractABI.parseFromJSON(Abi, 'Thing');
+    final thingContract = DeployedContract(
+      thingAbi,
+        EthereumAddress(contractAddress),
+        ethClient,
+        credentials);
+
+    return Future.value(ethClient.getBalance(credentials.address));
+
   }
 
   @override
