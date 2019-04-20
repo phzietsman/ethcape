@@ -7,13 +7,7 @@ SmsReceiver receiver = new SmsReceiver();
 
 void main() => runApp(MyApp());
 
-//void main() {
-//  log('FOKIT');
-//  SmsReceiver receiver = new SmsReceiver();
-//  receiver.onSmsReceived.listen((SmsMessage msg) =>
-//      log(msg.body)
-//  );
-//}
+
 
 
 
@@ -83,9 +77,10 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
+
       var words = msg.body.split(' ');
       if(words.length != 4) {
-        messageReceived = "Wrong message received";
+        messageReceived = msg.sender;
       }else{
         messageReceived = "Sending " + words[1] + " XDAI to " + words[3];
       }
@@ -103,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (phoneNumberController.text.isEmpty) {
       print('');
     } else {
-
+      new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), amountController.text.toString()));
     }
   }
 
