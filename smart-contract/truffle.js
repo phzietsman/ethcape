@@ -4,7 +4,7 @@ const HDWalletProvider = require("truffle-hdwallet-provider");
 module.exports = {
   networks: {
     xdai: {
-      provider: () => new HDWalletProvider(process.env.MNEMONIC, "https://dai.poa.network"),
+      provider: () => new HDWalletProvider("", "https://dai.poa.network"),
       network_id: 100
     },
     development: {
