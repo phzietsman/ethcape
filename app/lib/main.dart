@@ -135,29 +135,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void sendMoney(BuildContext context)  {
     
-    // getWal().then((value) { 
-    //   print("passed " + value.getInWei.toString());
-    // })
-    // .catchError((err){print("failed " + err);});
-    // String amount 
+    int balance; 
+    getWal().then((value) { 
+      print("passed " + value.getInWei.toString());
+      balance = int.parse(value.getInEther.toString());
+    })
+    .catchError((err){print("failed " + err);});
 
-    fundUser("5556", "10000000000000000");
-
-    // if (phoneNumberController.text.isEmpty) {
-    //   print('Enter valid phone number');
-    // } else {
-    //   var amountToPay = int.parse(amountController.text.toString()) - 0.2; //Broker fee
-    //   var message = amountToPay.toString() + " XDAI received from EthCPT.givemethe.eth";
-    //   new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), message));
-    // }
+    if (phoneNumberController.text.isEmpty) {
+      print('Enter valid phone number');
+    } else {
+      var amountToPay = int.parse(amountController.text.toString()) - 0.2; //Broker fee
+      if (amountToPay > balance) {
+        print('Insufficient Funds');
+      } else {
+        fundUser(phoneNumberController.text.toString(), amountToPay.toString());
+        var message = amountToPay.toString() + " XDAI received from EthCPT.givemethe.eth";
+        new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), message));
+      }
+    }
   }
-
-  var news = '<gathered news goes here>';
-  var oneSecond = Duration(seconds: 1);
-
-// Imagine that this function is more complex and slow. :)
-  Future<String> gatherNewsReports() =>
-      Future.value(news);
 
   Future<EtherAmount> getWal() async {
     // smart contracts goodies
@@ -194,7 +191,71 @@ class _MyHomePageState extends State<MyHomePage> {
     final something = await thingResponse.prepareForPaymentCall(thingContract, getfundUserFN, [to], EtherAmount.fromUnitAndValue(EtherUnit.wei, amount)).send(ethClient, chainId: 4);
 
     something.forEach((item) {print(item);});
+  }
 
+
+  Future<void> getUser(String from) async {
+    // smart contracts goodies
+    final httpClient = Client();
+    final ethClient = Web3Client(url, httpClient);
+    final credentials = Credentials.fromPrivateKeyHex(privateKey);
+    final thingAbi = ContractABI.parseFromJSON(Abi, 'Thing');
+    final thingContract = DeployedContract(
+      thingAbi,
+        EthereumAddress(contractAddress),
+        ethClient,
+        credentials);
+    final getUserFN = thingContract.findFunctionsByName('getUser').first;
+
+    final thingResponse = Transaction(keys: credentials,maximumGas: 100000);
+
+    //thingResponse.forceNonce(100);
+    final something = await thingResponse.prepareForCall(thingContract, getUserFN, [from]).call(ethClient, chainId: 4);
+
+    something.forEach((item) {print(item);});
+  }
+
+
+  Future<void> sendFundsToPhone(String from, String to, String amount) async {
+    // smart contracts goodies
+    final httpClient = Client();
+    final ethClient = Web3Client(url, httpClient);
+    final credentials = Credentials.fromPrivateKeyHex(privateKey);
+    final thingAbi = ContractABI.parseFromJSON(Abi, 'Thing');
+    final thingContract = DeployedContract(
+      thingAbi,
+        EthereumAddress(contractAddress),
+        ethClient,
+        credentials);
+    final sendFundsToPhoneFN = thingContract.findFunctionsByName('sendFundsToPhone').first;
+
+    final thingResponse = Transaction(keys: credentials,maximumGas: 100000);
+
+    //thingResponse.forceNonce(100);
+    final something = await thingResponse.prepareForCall(thingContract, sendFundsToPhoneFN, [from, to, amount]).send(ethClient, chainId: 4);
+
+    something.forEach((item) {print(item);});
+  }
+
+  Future<void> voteForTransaction(String from) async {
+    // smart contracts goodies
+    final httpClient = Client();
+    final ethClient = Web3Client(url, httpClient);
+    final credentials = Credentials.fromPrivateKeyHex(privateKey);
+    final thingAbi = ContractABI.parseFromJSON(Abi, 'Thing');
+    final thingContract = DeployedContract(
+      thingAbi,
+        EthereumAddress(contractAddress),
+        ethClient,
+        credentials);
+    final voteForTransactionFN = thingContract.findFunctionsByName('voteForTransaction').first;
+
+    final thingResponse = Transaction(keys: credentials,maximumGas: 100000);
+
+    //thingResponse.forceNonce(100);
+    final something = await thingResponse.prepareForCall(thingContract, voteForTransactionFN, [from]).send(ethClient, chainId: 4);
+
+    something.forEach((item) {print(item);});
   }
 
   @override

@@ -166,6 +166,11 @@ contract Thing {
     pendingPayment[_from].toAddress = _to;
     pendingPayment[_from].paymentType = PAYMENT_TYPE_ADDRESS;
     pendingPayment[_from].voted[msg.sender] = 1;
+
+    // Short circuit, remove when doing xdai
+    phoneNumberToBalance[_from] -= pendingPayment[_from].amount; 
+    phoneNumberToBalance[pendingPayment[_from].toPhone] += pendingPayment[_from].amount;
+
   }
   
 
