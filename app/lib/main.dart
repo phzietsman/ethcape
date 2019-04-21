@@ -18,7 +18,7 @@ const String privateKey =
     'EAE248BEB35E1A2BCE1C9FE2E648FC3D401733A848096B8BEC61D5EC92ACE6E5';
 
 const String url = 'https://rinkeby.infura.io/v3/07833b57821b47a9aec45dc69a107c17';
-const String contractAddress = '0x941146ea4fcf144b188b5cd0486cab523cdbae1022a9b67615163b540c3180fe';
+const String contractAddress = '0x3676817E8aBd12aAf51f4E43452b163852f70905';
 // const String url = 'https://dai.poa.network';
 // const String contractAddress = '0x47585672b0284CD3397FC6BA7743F91Bc48068A1';
 
@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // .catchError((err){print("failed " + err);});
     // String amount 
 
-    fundUser("5556", "20000000000000000");
+    fundUser("5556", "10000000000000000");
 
     // if (phoneNumberController.text.isEmpty) {
     //   print('Enter valid phone number');
@@ -188,10 +188,10 @@ class _MyHomePageState extends State<MyHomePage> {
         credentials);
     final getfundUserFN = thingContract.findFunctionsByName('fundUser').first;
 
-    final thingResponse = Transaction(keys: credentials,maximumGas: 10000000, gasPrice: EtherAmount.fromUnitAndValue(EtherUnit.wei, 1200000000));
+    final thingResponse = Transaction(keys: credentials,maximumGas: 100000);
 
-    thingResponse.forceNonce(100);
-    final something = await thingResponse.prepareForPaymentCall(thingContract, getfundUserFN, [to], EtherAmount.fromUnitAndValue(EtherUnit.wei, amount)).send(ethClient);
+    //thingResponse.forceNonce(100);
+    final something = await thingResponse.prepareForPaymentCall(thingContract, getfundUserFN, [to], EtherAmount.fromUnitAndValue(EtherUnit.wei, amount)).send(ethClient, chainId: 4);
 
     something.forEach((item) {print(item);});
 
