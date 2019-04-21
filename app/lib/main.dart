@@ -119,12 +119,14 @@ class _MyHomePageState extends State<MyHomePage> {
       }else{
         String receipient = words[3];
         String amount = words[1];
-        messageReceived = "Sending " + amount + " XDAI to " + receipient;
         var amountToPay = double.parse(amount) - 0.0; //Broker fee
-        new SmsSender().sendSms(new SmsMessage(msg.sender, amountToPay.toString() + " XDAI sent to " + receipient));
-        new SmsSender().sendSms(new SmsMessage(receipient, amountToPay.toString() + " XDAI received from " + msg.sender));
-        
-        transactions.add(messageReceived);
+        sendFundsToPhone(msg.sender,receipient,amountToPay.toString()).then((value) { 
+            new SmsSender().sendSms(new SmsMessage(msg.sender, amountToPay.toString() + " XDAI sent to " + receipient));
+            new SmsSender().sendSms(new SmsMessage(receipient, amountToPay.toString() + " XDAI received from " + msg.sender));
+            messageReceived = "Sending " + amount + " XDAI to " + receipient;
+            transactions.add(messageReceived);
+        })
+        .catchError((err){print("failed " + err);});
       }
 
     })
