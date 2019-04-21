@@ -12,23 +12,20 @@ import 'package:web3dart/web3dart.dart';
 
 // Smart contract goodies, needs to be stored somewhere sane
 const String Abi =
-    '[{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[],"name":"getWalletBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getBrokerStake","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_newBroker","type":"address"}],"name":"getBroker","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newBroker","type":"address"}],"name":"addBroker","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"addBrokerStake","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"_broker","type":"address"}],"name":"voteBrokerIn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_phoneNumber","type":"string"}],"name":"getUser","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_phoneNumber","type":"string"}],"name":"fundUser","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"},{"name":"_to","type":"string"},{"name":"_amount","type":"uint256"}],"name":"sendFundsToPhone","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"},{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"sendFundsToAddr","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"}],"name":"voteForTransaction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]';
+    '[{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_from","type":"string"}],"name":"NewTransaction","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_from","type":"string"},{"indexed":false,"name":"_to","type":"string"},{"indexed":false,"name":"_amount","type":"uint256"}],"name":"SuccessfulTransaction","type":"event"},{"constant":true,"inputs":[],"name":"getWalletBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getBrokerStake","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_newBroker","type":"address"}],"name":"getBroker","outputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newBroker","type":"address"}],"name":"addBroker","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"addBrokerStake","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"_broker","type":"address"}],"name":"voteBrokerIn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_phoneNumber","type":"string"}],"name":"getUser","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_phoneNumber","type":"string"}],"name":"fundUser","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"},{"name":"_to","type":"string"},{"name":"_amount","type":"uint256"}],"name":"sendFundsToPhone","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"},{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"sendFundsToAddr","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"string"}],"name":"voteForTransaction","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]';
 
 const String privateKey =
     'EAE248BEB35E1A2BCE1C9FE2E648FC3D401733A848096B8BEC61D5EC92ACE6E5';
 
-const String url = 'https://dai.poa.network';
-const String contractAddress = '0x48cCF267510C75C9AfDDDe1989AA35CAdaE49AcE';
+const String url = 'https://rinkeby.infura.io/v3/07833b57821b47a9aec45dc69a107c17';
+const String contractAddress = '0x941146ea4fcf144b188b5cd0486cab523cdbae1022a9b67615163b540c3180fe';
+// const String url = 'https://dai.poa.network';
+// const String contractAddress = '0x47585672b0284CD3397FC6BA7743F91Bc48068A1';
 
 
 SmsReceiver receiver = new SmsReceiver();
-UserProfileProvider provider = new UserProfileProvider();
-String brokerNumber;
 
 void main() => runApp(MyApp());
-
-
-
 
 class MyApp extends StatelessWidget {
 
@@ -123,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
         String receipient = words[3];
         String amount = words[1];
         messageReceived = "Sending " + amount + " XDAI to " + receipient;
-        var amountToPay = int.parse(amount) - 0.2; //Broker fee
+        var amountToPay = double.parse(amount) - 0.0; //Broker fee
         new SmsSender().sendSms(new SmsMessage(msg.sender, amountToPay.toString() + " XDAI sent to " + receipient));
         new SmsSender().sendSms(new SmsMessage(receipient, amountToPay.toString() + " XDAI received from " + msg.sender));
         
@@ -137,32 +134,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void sendMoney(BuildContext context)  {
-    // First make sure there is some information in the form.
-    // A dog needs a name, but may be location independent,
-    // so we'll only abandon the save if there's no name.
-    //gatherNewsReports().then((value) => print(value));
-    //getWal().then((value) => { print(value.getInEther.toString())}).catchError(print);
-    final httpClient = Client();
-    final ethClient = Web3Client(url, httpClient);
-    final credentials = Credentials.fromPrivateKeyHex(privateKey);
-    final thingAbi = ContractABI.parseFromJSON(Abi, 'Thing');
-    final thingContract = DeployedContract(
-        thingAbi,
-        EthereumAddress(contractAddress),
-        ethClient,
-        credentials);
+    
+    // getWal().then((value) { 
+    //   print("passed " + value.getInWei.toString());
+    // })
+    // .catchError((err){print("failed " + err);});
+    // String amount 
 
-    ethClient.getBalance(credentials.address).then((value) => print(value.getValueInUnit(EtherUnit.ether))).catchError((err) => print);
-    //print(balance.getValueInUnit(EtherUnit.ether));
+    fundUser("5556", "20000000000000000");
 
-    if (phoneNumberController.text.isEmpty) {
-      print('Enter valid phone number');
-    } else {
-      var amountToPay = int.parse(amountController.text.toString()) - 0.2; //Broker fee
-      var message = amountToPay.toString() + " XDAI received from EthCPT.givemethe.eth";
-      new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), message));
-       Navigator.pushReplacementNamed(context, "/check");
-    }
+    // if (phoneNumberController.text.isEmpty) {
+    //   print('Enter valid phone number');
+    // } else {
+    //   var amountToPay = int.parse(amountController.text.toString()) - 0.2; //Broker fee
+    //   var message = amountToPay.toString() + " XDAI received from EthCPT.givemethe.eth";
+    //   new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), message));
+    // }
   }
 
   var news = '<gathered news goes here>';
@@ -178,13 +165,35 @@ class _MyHomePageState extends State<MyHomePage> {
     final ethClient = Web3Client(url, httpClient);
     final credentials = Credentials.fromPrivateKeyHex(privateKey);
     final thingAbi = ContractABI.parseFromJSON(Abi, 'Thing');
+    // final thingContract = DeployedContract(
+    //   thingAbi,
+    //     EthereumAddress(contractAddress),
+    //     ethClient,
+    //     credentials);
+
+    return ethClient.getBalance(credentials.address);
+
+  }
+
+  Future<void> fundUser(String to, String amount) async {
+    // smart contracts goodies
+    final httpClient = Client();
+    final ethClient = Web3Client(url, httpClient);
+    final credentials = Credentials.fromPrivateKeyHex(privateKey);
+    final thingAbi = ContractABI.parseFromJSON(Abi, 'Thing');
     final thingContract = DeployedContract(
       thingAbi,
         EthereumAddress(contractAddress),
         ethClient,
         credentials);
+    final getfundUserFN = thingContract.findFunctionsByName('fundUser').first;
 
-    return Future.value(ethClient.getBalance(credentials.address));
+    final thingResponse = Transaction(keys: credentials,maximumGas: 10000000, gasPrice: EtherAmount.fromUnitAndValue(EtherUnit.wei, 1200000000));
+
+    thingResponse.forceNonce(100);
+    final something = await thingResponse.prepareForPaymentCall(thingContract, getfundUserFN, [to], EtherAmount.fromUnitAndValue(EtherUnit.wei, amount)).send(ethClient);
+
+    something.forEach((item) {print(item);});
 
   }
 
