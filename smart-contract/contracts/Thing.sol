@@ -34,10 +34,10 @@ contract Thing {
   mapping (string => uint) phoneNumberToBalance;
   mapping (string => PaymentStatus) pendingPayment;
   
-  uint STAKE = 15;
-  uint NEW_BROKER_VOTES_REQUIRE = 4;
-  uint TRANSACTION_VOTES_REQUIRE = 3;
-  uint TRANSACTION_TIMEOUT = 100;
+  uint STAKE = 0;
+  uint NEW_BROKER_VOTES_REQUIRE = 0;
+  uint TRANSACTION_VOTES_REQUIRE = 0;
+  uint TRANSACTION_TIMEOUT = 0;
 
   mapping (address => BrokerStatus) brokerStatus;
 
@@ -53,6 +53,7 @@ contract Thing {
 
   constructor() public {
     owner = msg.sender;
+    addBroker(msg.sender);
   }
 
 
