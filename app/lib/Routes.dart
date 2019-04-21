@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ethcapetown/Pages/check.dart';
+import 'package:ethcapetown/check.dart';
 import 'package:ethcapetown/main.dart';
 
 class Routes {
   Routes() {
     runApp(new MaterialApp(
-      title: "EthCPT.givemethe.eth",
+      title: "ethcapetown.givemethe.eth",
       debugShowCheckedModeBanner: false,
       home: new CheckScreen(),
       onGenerateRoute: (RouteSettings settings) {

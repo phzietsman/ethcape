@@ -1,9 +1,16 @@
+
+
+
 import 'package:flutter/material.dart';
 import 'package:sms/sms.dart';
+import 'package:sms/contact.dart';
+import 'package:async/async.dart';
 import 'dart:developer';
 import 'dart:async';
 
 SmsReceiver receiver = new SmsReceiver();
+UserProfileProvider provider = new UserProfileProvider();
+String brokerNumber;
 
 void main() => runApp(MyApp());
 
@@ -82,9 +89,9 @@ class _MyHomePageState extends State<MyHomePage> {
         String receipient = words[3];
         String amount = words[1];
         messageReceived = "Sending " + amount + " XDAI to " + receipient;
-        
-        new SmsSender().sendSms(new SmsMessage(msg.sender, amount + " XDAI sent to " + receipient));
-        new SmsSender().sendSms(new SmsMessage(receipient, amount + " XDAI received from " + msg.sender));
+        var amountToPay = int.parse(amount) - 0.2; //Broker fee
+        new SmsSender().sendSms(new SmsMessage(msg.sender, amountToPay.toString() + " XDAI sent to " + receipient));
+        new SmsSender().sendSms(new SmsMessage(receipient, amountToPay.toString() + " XDAI received from " + msg.sender));
         
         transactions.add(messageReceived);
       }
@@ -95,14 +102,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  void sendMoney(BuildContext context) {
+  void sendMoney(BuildContext context) async {
+    
     // First make sure there is some information in the form.
     // A dog needs a name, but may be location independent,
     // so we'll only abandon the save if there's no name.
     if (phoneNumberController.text.isEmpty) {
-      print('Enter valid phone number you moogoo ');
+      print('Enter valid phone number');
     } else {
-      new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), amountController.text.toString()));
+      var amountToPay = int.parse(amountController.text.toString()) - 0.2; //Broker fee
+      var message = amountToPay.toString() + " XDAI received from EthCPT.givemethe.eth";
+      new SmsSender().sendSms(new SmsMessage(phoneNumberController.text.toString(), message));
        Navigator.pushReplacementNamed(context, "/check");
     }
   }
@@ -111,11 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('EthGlobal'),
-        backgroundColor: Colors.grey,
+        title: Text('ethcapetown.givemethe.eth'),
+        backgroundColor: Colors.blue,
       ),
       body: Container(
-        color: Colors.grey,
+        color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             vertical: 8.0,
@@ -162,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     return RaisedButton(
                       onPressed: () => sendMoney(context),
                       color: Colors.lightBlueAccent,
-                      child: Text('Send Money'),
+                      child: Text('Send XDAI'),
                     );
                   },
                 ),

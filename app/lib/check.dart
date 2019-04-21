@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
-
-
 class CheckScreen extends StatefulWidget {
   const CheckScreen({Key key}) : super(key: key);
   @override
@@ -28,11 +26,11 @@ class CheckScreenState extends State<CheckScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('EthGlobal'),
-        backgroundColor: Colors.grey,
+        title: Text('ethcapetown.givemethe.eth'),
+        backgroundColor: Colors.black,
       ),
       body: Container(
-        color: Colors.grey,
+        color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             vertical: 8.0,
