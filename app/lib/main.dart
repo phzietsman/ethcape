@@ -18,7 +18,7 @@ const String privateKey =
     'EAE248BEB35E1A2BCE1C9FE2E648FC3D401733A848096B8BEC61D5EC92ACE6E5';
 
 const String url = 'https://rinkeby.infura.io/v3/07833b57821b47a9aec45dc69a107c17';
-const String contractAddress = '0x3676817E8aBd12aAf51f4E43452b163852f70905';
+const String contractAddress = '0x483f51aD758905a2fa89bb74245bceC1Bb3fe170';
 // const String url = 'https://dai.poa.network';
 // const String contractAddress = '0x47585672b0284CD3397FC6BA7743F91Bc48068A1';
 
@@ -216,7 +216,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     something.forEach((item) {print(item);});
   }
-
 
   Future<void> sendFundsToPhone(String from, String to, String amount) async {
     // smart contracts goodies
